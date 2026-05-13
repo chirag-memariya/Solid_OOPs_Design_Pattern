@@ -1,0 +1,42 @@
+
+using System.Text.Json;
+using System.Threading.Tasks.Dataflow;
+
+
+namespace Serialization;
+public class Purchase
+{
+    public string? ProductName {get;set;}
+    public DateTime DateTime{get;set;}
+    public decimal ProductPrice{get;set;}
+}
+
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        Purchase purchase = new Purchase
+        {
+            ProductName = "Orange Juice",
+            DateTime = DateTime.UtcNow,
+            ProductPrice = 2.49m
+        };
+
+        var options = new JsonSerializerOptions();
+        options.WriteIndented = true;
+        string jsonString = JsonSerializer.Serialize<Purchase>(purchase,options);
+        // var jsonString = JsonSerializer.SerializeToUtf8Bytes(purchase);
+
+        File.WriteAllText("purchase.json",jsonString);
+
+
+        //Deserializer
+        var purchaseJson = File.ReadAllText("purchase.json");
+        Purchase purchase1 = JsonSerializer.Deserialize<Purchase>(purchaseJson);
+        Console.WriteLine(purchase1?.ProductName);
+        Console.WriteLine(purchase1?.DateTime);
+        Console.WriteLine(purchase1?.ProductPrice);
+
+    }
+}

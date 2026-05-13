@@ -1,0 +1,52 @@
+// Dynamically 
+int[] ids = [ 111, 114, 112,3,6,9 ];
+
+Student[] students =
+{
+    new Student{LastName="Chirag",ID = 1},
+    new Student{LastName="Chirag2",ID = 2},
+    new Student{LastName="Chirag3",ID = 3},
+    new Student{LastName="Chirag4",ID = 4},
+    new Student{LastName="Chirag5",ID = 5},
+    new Student{LastName="Chirag6",ID = 6},
+    new Student{LastName="Chirag7",ID = 7},
+    new Student{LastName="Chirag8",ID = 8},
+    new Student{LastName="Chirag9",ID = 9},
+};
+
+
+var queryNames = from student in students
+                 where ids.Contains(student.ID)
+                 select new
+                 {
+                     student.LastName,
+                     student.ID
+                 };
+
+foreach (var name in queryNames)
+{
+    Console.WriteLine($"{name.LastName}: {name.ID}");
+}
+Console.WriteLine("------------------------");
+
+/* Output:
+    Garcia: 114
+    O'Donnell: 112
+    Omelchenko: 111
+ */
+
+// Change the ids.
+ids = [ 122, 117, 120, 115,1,2 ];
+
+// The query will now return different results
+foreach (var name in queryNames)
+{
+    Console.WriteLine($"{name.LastName}: {name.ID}");
+}
+
+
+public class Student
+{
+    public string LastName { get; set; } = "";
+    public int ID { get; set; } 
+}

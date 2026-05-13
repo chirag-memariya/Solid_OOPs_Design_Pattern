@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediatRDemo", "MediatRDemo.csproj", "{35167D32-CEAC-1BBA-C3C6-83697D0A59A6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{35167D32-CEAC-1BBA-C3C6-83697D0A59A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35167D32-CEAC-1BBA-C3C6-83697D0A59A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35167D32-CEAC-1BBA-C3C6-83697D0A59A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35167D32-CEAC-1BBA-C3C6-83697D0A59A6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7DB53A8A-7CFE-41DF-A9EA-C3101D39B020}
+	EndGlobalSection
+EndGlobal

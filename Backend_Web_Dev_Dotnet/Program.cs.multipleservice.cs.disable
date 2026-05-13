@@ -1,0 +1,31 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSingleton<ICache, SmallCache>();
+builder.Services.AddSingleton<ICache, BigCache>();
+builder.Services.AddControllers();
+
+var app = builder.Build();
+
+app.MapGet("/big", ( [FromServices] ICache bigCache) => bigCache.Get());
+app.MapGet("/small", ( [FromServices] ICache smallCache) => smallCache.Get());
+
+app.MapControllers();
+
+app.Run();
+
+public interface ICache
+{
+    object Get();
+}
+public class BigCache : ICache
+{
+    public object Get() => $"Resolving from big cache.";
+}
+
+public class SmallCache : ICache
+{
+    public object Get() => $"Resolving from small cache.";
+}

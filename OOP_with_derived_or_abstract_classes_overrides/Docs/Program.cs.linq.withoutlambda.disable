@@ -1,0 +1,38 @@
+int[] numbers = [ 5, 10, 8,17, 20, 21, 22, 23, 3, 6, 12, 7, 9, 11, 12, 13,15, 16, 24, 25 ];
+
+//Query syntax:
+
+IEnumerable<int> result1 =
+    from n in numbers
+    where n % 2 == 0
+    orderby n
+    select n;
+
+// print(result1);
+
+//Method syntax:
+IEnumerable<int> result2 =
+    numbers.Where(n => n % 2 == 0).OrderBy(n => n);
+
+// print(result2);
+
+static void print(IEnumerable<int> numbers)
+{
+    foreach (int i in numbers)
+    {
+        Console.Write(i + " ");
+    }
+    Console.WriteLine();
+}
+
+
+var numCount =
+    from num in numbers
+    where num is > 13 and < 29
+    orderby num ascending
+    select num;
+
+// print(numCount);
+// Console.WriteLine(numCount.Count());
+
+
