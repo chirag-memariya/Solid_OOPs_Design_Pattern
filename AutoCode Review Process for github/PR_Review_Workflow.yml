@@ -1,0 +1,121 @@
+name: PR Refactor Suggestion
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths-ignore:
+      - '.github/workflows/**'
+      - 'scripts/**'
+      - 'README.md'
+      - 'docs/**'
+      - '*.md'
+
+jobs:
+  suggest-refactor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    env:
+      OLLAMA_MODEL: qwen2.5-coder
+      OLLAMA_HOSTNAME: http://localhost:11434
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # --- Ollama Setup Steps ---
+      - name: Install Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+        shell: bash
+
+      - name: Start Ollama Server
+        run: |
+          echo "Killing any existing Ollama serve processes…"
+          # Try pkill first (won't error if none found), then lsof as a fallback
+          pkill -f "ollama serve" || true
+          lsof -ti :11434 | xargs --no-run-if-empty kill -9 || true
+      
+          echo "Starting Ollama server in detached mode (if not already running)…"
+          # Only start if the port really is free
+          if ! curl --silent --head --fail http://localhost:11434; then
+            nohup ollama serve > /dev/null 2>&1 &
+            disown
+          else
+            echo "→ Ollama already running!"
+          fi
+      
+          echo "Waiting up to 30s for Ollama to respond…"
+          for i in $(seq 1 30); do
+            if curl --silent --head --fail http://localhost:11434; then
+              echo "→ Ollama is up!"
+              exit 0
+            fi
+            echo "  attempt $i…"
+            sleep 1
+          done
+      
+          echo "Ollama did not start."
+          exit 1
+        shell: bash
+
+      - name: Pull Ollama Model
+        run: |
+          ollama pull ${{ env.OLLAMA_MODEL }}
+        shell: bash
+        
+      - name: AI Refactor Suggestion
+        id: ai_review_step
+        shell: pwsh
+        run: |
+          $suggestion = & ./scripts/GenAISuggestion.ps1
+          
+          # Save suggestion to a temporary file
+          if ($suggestion -and $suggestion.Trim() -ne "" -and $suggestion -ne "No review comment generated.") {
+            $suggestion | Out-File -FilePath "./ai_suggestion.txt" -Encoding utf8
+            Write-Output "HAS_AI_COMMENT=true" >> $env:GITHUB_ENV
+            Write-Output "AI suggestion saved to file"
+          } else {
+            Write-Output "HAS_AI_COMMENT=false" >> $env:GITHUB_ENV
+            Write-Output "No valid AI suggestion generated"
+          }
+      
+      # --- Post Review Comment Step ---
+      - name: Post Review Comment
+        if: env.HAS_AI_COMMENT == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            
+            try {
+              const comment = fs.readFileSync('./ai_suggestion.txt', 'utf8');
+              const commentBody = `## AI Code Review Suggestions
+            
+            > **Powered by Ollama (${{ env.OLLAMA_MODEL }})**
+            
+            ${comment}
+            
+            ---
+            *This review was automatically generated. Please use your judgment when applying these suggestions.*`;
+              
+              await github.rest.pulls.createReview({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                event: 'COMMENT',
+                body: commentBody
+              });
+              
+              console.log('AI review comment posted successfully');
+            } catch (error) {
+              console.error('Error posting AI review comment:', error);
+              throw error;
+            }

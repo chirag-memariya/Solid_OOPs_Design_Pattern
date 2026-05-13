@@ -1,0 +1,6 @@
+https://www.youtube.com/watch?v=L521gizea4s
+
+when traffic increase in database and query time increase we can use sharding technique to shard database in to multiple database and it will eventually deacrease the load time.
+
+1.what to shard 
+2.how to shard

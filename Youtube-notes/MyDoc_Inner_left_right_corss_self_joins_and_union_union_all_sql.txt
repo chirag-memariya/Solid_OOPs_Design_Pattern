@@ -1,0 +1,869 @@
+============================TABLE==============================
+--create authors table
+create table authors{
+    author_id int primary key,
+    author_firstname varchar(50),
+    author_lastname varchar(50),
+    birth_year int
+};
+
+create table books{
+    book_id int primary key,
+    title varchar(100),
+    author_id varchar(50),
+    published_year int
+    price decimal(6,2)
+};
+
+-- insert data into authors table
+insert into authors (authord_id,author_firstname,author_lastname,birth_year)
+values
+    (1,'jane','austen',1775),
+    (2,'George','orwell',1903),
+    (3,'ernest','heminway',1899),
+    (4,'agatha','christie',1890),
+    (5,'jk','rowling',1965);
+
+--insert data into books table
+insert into books(book_id,title,authord_id,published_year,price)
+values
+    (101,'Pride and Prejudice',1,1813,12.99),
+    (102,'1984',2,1949,14.50),
+    (103,'animal farm',2,1945,11.50),
+    (104,'the old man and the sea',3,1952,10.99);
+    (105,'murder on the orient express',4,1934,13.25);
+    (106,'death on the nile',4,1937,12.50);
+    (107,'emma',1,1815,11.99);
+    (108,'for whom the bell tolls',3,1940,15.75);
+
+
+--create categories table
+create talble categories{
+    category_id int primary key,
+    category_name varchar(50)
+};
+
+insert into categories (categories_id,categories_name) 
+values 
+    (1,'Fiction'),
+    (2,'Classic'),
+    (3,'Romance'),
+    (4,'Political'),
+    (5,'Mystery'),
+    (6,'Adventure');
+
+==========================TABLE==============================
+
+### Inner Join 
+    creates only rows where there is a match in both talbes base on the specified join condition
+    if there is no match the rows from both tables are excluded from the result set
+
+
+
+#how many each author has written
+
+select count(*) 
+from author as a
+join books as b
+on a.author_id=b.author_id
+group by a.author_id
+
+book 
+author 
+categories
+book_categories
+
+
+
+#get books with their authors and categories
+
+
+//books with authors 
+select * 
+from book as b
+join author as a
+on b.authorid = a.authorid 
+
+//books with categories
+select * 
+from books as b
+join categories as c
+on b.bookid == c.bookid  
+
+
+============================TABLE==============================
+authros
+a
+b
+c
+
+book 
+101
+102
+103
+
+join by autherid book_table have book id
+
+book_categories 
+101,1  -> can have multiple book with diff categories
+101,2 
+101,3
+
+
+categories 
+1 
+2 
+3
+============================TABLE==============================
+
+# get books with its author and its categories
+
+    select 
+        b.book_name 
+        a.author_name
+        c.categories_name
+        group_concat(c.categories_name separator ', ') 
+
+    from book as b
+    join author as a on b.author_id = a.author_id
+    join book_categories bc on bc.book_id = b.book_id
+    join categories c on bc.categories_id = c.categories_id
+    group by b.book_id
+
+note - if here we dont use group concate then it will give an error 
+there each books have a multiple categories while grouping so its confuse 
+to select which one so we can tell it that we want all categories and 
+concate all in that with , seperator which we can do that using group_concat
+
+
+# return books published before 1950 by authrors born before 1900
+
+: brute force 1)
+    select book_name author_name
+    from  books b
+    join author a
+    on a.author_id = b.author_id
+    where b.published_date_year < 1950 and a.dob_year < 1900 
+
+: optimised 2) 
+
+select book_name author_name
+from books b
+join author a
+on a.author_id = b.author_id
+    and b.published_date_year < 1950
+    and a.dob_year < 1900 
+
+note - in 1) we do fitering after joining 
+    in 2) we are doing filterig while joining (while matching)
+    so in this case(2)) its filtered early so its faster then 1)
+
+#return books published more than 70 year ago
+select book_name, a.last_name
+from books b 
+join author a 
+on a.autherid = b.autherid where year(CURDATE()-published_date_year) > 70
+
+note - using where with on or using are with on is same for inner join
+
+#
+
+##
+inner join excludes row with null values in the join columns.if you want to include rows with null
+values you would need to use left or rigth join
+##
+
+#find authors who have written more than one book
+select a.author_firstnamename a.author_lastname
+from authors a
+join books b
+on a.autherid = b.autherid
+group by a.authorid
+having count (b.book_id) > 1;
+
+GROUP BY a.authorid ensures we group by each author.
+HAVING COUNT(b.book_id) > 1 filters only those authors who have written more than one book.
+Including both author_firstname and author_lastname makes the output clearer.
+
+------------------------+------------------------------+-------------------------------------------------+------------------------------+-------------------------
+------------------------+------------------------------+-------------------------------------------------+------------------------------+-------------------------
+
+
+note - left inner join or right inner join does not have any meaning, 
+    means we only get those raw which value matched
+
+### Left outer join
+ - it return all records from the left table and only the matching records from the right table
+ - if no match exists in the right table NULL values wiil be returned for the right table's column 
+
+ syntax :
+
+ select column 
+ from table1
+ left join talbe2
+ onl table1.column = talbe2.column 
+
+create database left_join_tutorial;
+use left_join_tutorial;
+
+create table customers{
+    customer_id INT PRIMARY KEY,
+    customer_name VACHAR(100) NOT NULL,
+    email VARCHAR(100),
+    city VACHAR(50)
+};
+
+create table orders{
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    order_date DATE NOT NULL,
+    total_amount DECIMAL(6,2),
+    FOREIGN KEY (customer_id) REFERENCEs customers(customer_id)
+};
+
+
+insert into customers (customer_id,customer_name,email,city)
+values
+    (1,'John Smith','john@example.com','New York'),
+    (2,'Jane Doe','john2@example.com','New York1'),
+    (3,'Robert Johnson','john3@example.com','New York2'),
+    (4,'Emilly Davis','john4@example.com','New York3'),
+    (5,'Michael Brown','john5 @example.com','New York4');
+
+insert into orders (order_id,customer_id,order_date,total_amount)
+values
+    (101,1,'2023-01-15',150.75),
+    (102,3,'2023-01-16',89.50),
+    (103,1,'2023-01-20',45.25),
+    (104,2,'2023-01-25',210.30),
+    (105,3,'2023-02-01',75.00);
+
+
+# get all customers with their order if any
+select customer_id,order_id
+from customers c
+left join orders o
+on c.customer_id = o.order_id;
+
+# get all customers which have 0 orders
+select customer_id, customer_name
+from customers c 
+left join orders o 
+on c.customer_id = o.customer_id
+where o.order_id is null;
+
+# count order for each customer 
+select 
+    c.customer_id
+    count(o.order_id)
+    group_concat(o.order_id separator ', ')
+    IFNULL(sum(o.total_amount),0) as total_spend
+from customers c 
+left join order o 
+on c.customer_id = o.customer_id
+group by c.customer_id
+
+
+create table shippings{
+    shipping_id INT PRIMARY KEY,
+    order_id int,
+    shipping_date DATE,
+    carrier VARCHAR(50),
+    tracking_number VARCHAR(50),
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+};
+
+insert into shipping (shippin_id, order_id,shippin_date,carrier,tracking_number)
+values
+    (1001,101,'2023-01-16','FedEX','FDX123456789'),
+    (1002,104,'2023-01-26','UPS','UPS123456789'),
+    (1003,105,'2023-02-02','USPS','USPS123456789');
+
+
+# Get customers, their orders, and shipping info
+
+select 
+    c.customer_id, 
+    o.order_id, 
+    s.shipping_id
+from 
+    customers c
+left join 
+    orders o on c.customer_id = o.customer_id
+left join 
+    shippings s on o.order_id = s.order_id;
+
+insert into customers (customer_id,customer_name,email,city)
+values
+    (1,'John Smith','john@example.com','New York'),
+    (2,'Jane Doe','john2@example.com','New York1'),
+    (3,'Robert Johnson','john3@example.com','New York2'),
+    (4,'Emilly Davis','john4@example.com','New York3'),
+    (5,'Michael Brown','john5 @example.com','New York4');
+
+insert into orders (order_id,customer_id,order_date,total_amount)
+values
+    (101,1,'2023-01-15',150.75),
+    (102,3,'2023-01-16',89.50),
+    (103,1,'2023-01-20',45.25),
+    (104,2,'2023-01-25',210.30),
+    (105,3,'2023-02-01',75.00);
+
+insert into shipping (shippin_id, order_id,shippin_date,carrier,tracking_number)
+values
+    (1001,101,'2023-01-16','FedEX','FDX123456789'),
+    (1002,104,'2023-01-26','UPS','UPS123456789'),
+    (1003,105,'2023-02-02','USPS','USPS123456789');
+
+# analyze new york customers and their order history
+
+select 
+    c.customer_id 
+    c.customer_name
+    o.order_id
+    o.order_date
+    o.total_amount
+from customers c
+left join orders o on c.customer_id = o.customer_id where c.city = 'New York';
+
+note- in this we do join and then fitering out so its inefficient query
+
+* optimised - but it also print all customer with null order field
+select 
+    c.customer_id
+    c.customer_name
+    o.order_id
+    o.order_date
+    o.total_amount
+from    
+    customers c
+left join orders on c.customer_id = o.customer_id wheAND re c.city = 'New York';
+
+-- -> so we do first compare city and then join it so it will improve performance
+-- so using this is the most efficient approach and we get exactly custome with order id (using left join , in inner we can get with and )
+select 
+    c.customer_id
+    c.customer_name
+    o.order_id
+    o.order_date
+    o.total_amount
+from
+    (select * from customer where city = 'New York') c
+left join orders o on c.customer_id = o.customer_id ;
+
+
+# find customers who haven't ordered in the past 30 days( IMP: Real-word use of left join)
+-- have never placed an order, or
+-- have place orders but none within the last 30 days
+
+select 
+    c.customer_id, 
+    c.customer_name,
+    MAX(o.order_date) AS last_order_date 
+from 
+    customes c 
+left join orders on c.customer_id = o.customer_id 
+group by 
+    c.customer_id,c.customer_name
+        having last_order_date IS NULL OR last_order_date < DATE_SUB(CURDATE(), INTERVAL 30 DAY); 
+
+note - 
+Why MAX(o.order_date)?
+Each customer may have multiple orders.
+We only care about the latest order date.
+MAX(o.order_date) gives us the most recent order per customer after grouping.
+
+* for customer lets we have these two orders  
+- order 1: placed 60 days ago
+- order 2: placed 10 days ago, then these will delete if we use where as it applied before grouping,
+                                --> so this will scan row by row and we have 60 days ago row not 10 days ago 
+                                    which is latest and we want latest order should be greater than 30 days 
+                                    then is will give 60 > 30 yes and wrong ans we need 10 > 30 and not include it to ans 
+HAVING filters groups after aggregation.
+First, SQL groups all orders per customer.
+Then it calculates MAX(o.order_date) (the true last order).
+Finally, HAVING checks if that last order is NULL (never ordered) or older than 30 days.
+
+------------------------+------------------------------+-------------------------------------------------+------------------------------+-------------------------
+------------------------+------------------------------+-------------------------------------------------+------------------------------+-------------------------
+
+
+### RIGHT OUTER JOIN / RIGHT JOIN 
+
+--we will get all row that matched with specified key and all row from left 
+--if left not contains any data then it will be filled with NULL
+
+--create database and table
+create database gokuldham_society;
+use gokuldham_society;
+
+create table apartments{
+    apartment_id INT PRIMARY KEY,
+    apartment_nubmer VARCHAR(10) NOT NULL,
+    floor_number INT NOT NULL,
+    wing_name VARCHAR(3) NOT NULL
+};
+
+
+create table residents{
+    resident_id INT PRIMARY KEY,
+    resident_firstname VARCHAR(50) NOT NULL,
+    resident_lastname VARCHAR(50) NOT NULL,
+    occupation VARCHAR(100),
+    apartment_id INT,
+    FOREIGN KEY (apartment_id) REFERENCES apartments(apartment_id)
+};
+create table maintenance_requests(
+    request_id INT PRIMARY KEY,
+    apartment_id INT,
+    request_date DATE not null,
+    descrition TEXT not null,
+    status ENUM('Pending','In progress','Completed') Default 'Pending',
+    FOREIGN KEY (apartment_id) references apartments(apartment_id)
+);
+
+insert into apartments(apartment_id,apartment_nubmer,floor_number,wing_name) values 
+(1,'101',1,'A'),
+(2,'102',1,'A'),
+(3,'201',2,'A'),
+(4,'202',2,'A'),
+(5,'301',3,'A'),
+(6,'302',3,'A'),
+(7,'401',4,'A'),
+(8,'402',4,'A'),
+(9,'501',5,'B'),
+(10,'502',5,'B');
+
+insert into residents (resident_id,resident_firstname,resident_lastname,occupation,apartment_id) values
+(1,'jethalal','gada','electronics shop owner',1);
+(2,'daya','gada','housewife',1);
+(3,'taarak','mehta','writer',2);
+(4,'anjali','mehta','housewife',2);
+(5,'popatlal','pandey','reporter',3);
+(6,'bhide','atmaram','school teacher',4);
+(7,'madhavi','bhide','owner',4);
+(8,'dr','hathi','doctro',5);
+(9,'komal','hathi','housewife',5);
+
+
+insert into maintenance_requests (request_id,apartment_id,request_date,descrition,status) value 
+(1,1,'2023-01-15','Leaky','Completed'),
+(2,1,'2023-02-25','broken','Completed'),
+(3,2,'2023-03-10','electricity','inprogress'),
+(4,4,'2023-03-15','ceiling','pending '),
+(5,5,'2023-04-01','bathroom','Completed'),
+(6,8,'2023-04-10','water','in progress');
+
+--note : we've left some apartments without residents
+
+-- see all apartments and their residents if any 
+
+select a.apartment_nubmer, a.floor_number, a.wing_name, r.resident_firstname, r.resident_lastname
+from residents r 
+rigth join apartments a 
+on a.apartment_id = r.resident_id;
+
+-- finding unoccupied apartments
+select a.apartment_nubmer, a.floor_number, a.wing_name
+from apartments a 
+left join residents r 
+on a.residents_id=r.resident_id;
+
+
+-- count the number of residents per apartments
+select count(r.resident_id), a.apartment_id
+from apartments a 
+left join residents r 
+on a.apartment_id = r.apartment_id 
+group by a.apartment_id;
+
+
+--list all apartments with their residents and maintenance request status
+select 
+    a.apartment_id,
+    group_concat(r.resident_firstname) as residents,
+    group_concat(m.status) as maintenance_statuses
+from apartments a 
+left join residents r 
+    on a.apartment_id = r.apartment_id 
+left join maintenance_requests m 
+    on a.apartment_id = m.apartment_id
+group by apartment_id;
+
+--write a query to find the floor with the most unoccupied apartments
+select 
+    a.floor_number,
+    count(a.apartment_id) as unccupied_count
+from 
+    apartments a 
+left join 
+    residents r 
+on 
+    a.apartment_id = r.apartment_id where r.resident_id is null --only unccupied apartments
+group by 
+    a.floor_number
+order by unccupied_count desc 
+limit 1;
+
+
+⚖️ Practical Effect in Your Case
+If you write:
+
+sql
+select a.floor_number, count(a.apartment_id) as unoccupied_count
+from apartments a
+left join residents r on a.apartment_id = r.apartment_id
+where r.resident_id is null
+group by a.floor_number
+having count(a.apartment_id) > 1;
+The WHERE ensures only unoccupied apartments are grouped.
+
+The HAVING ensures only floors with more than 1 unoccupied apartment appear in the result.
+
+If you tried to use HAVING instead of WHERE for the r.resident_id is null condition, it would still work but less efficiently, because grouping would include all apartments first, and only then filter groups where the count of residents is zero.
+
+📝 Rule of Thumb
+Use WHERE for filtering raw rows.
+
+Use HAVING for filtering aggregated/grouped results.
+
+
+--write a query to list all apartments along with the total number of maintenance requests 
+select a.apartment_id, count(m.request_id) as total_number_of_maintenance_request
+from 
+    apartments a 
+left join 
+    maintenance_requests m 
+on 
+    a.apartment_id = m.apartment_id
+group by 
+    a.apartment_id;
+
+
+------------------------+------------------------------+-------------------------------------------------+------------------------------+-------------------------
+------------------------+------------------------------+-------------------------------------------------+------------------------------+-------------------------
+
+
+### UNION ALL 
+
+-- allow us to combine result sets from multiple select queries into a single result set 
+-- union 
+-- union all
+
+
+--create database 
+create database uniondemo;
+Use uniondemo;
+
+create table headquarters_employees(
+    emloyee_id int primary key,
+    first_name varchar(50),
+    last_name varchar(50),
+    email varchar(100),
+    hire_date DATE,
+    department varchar(50),
+    salary decimal(10,2)
+);
+
+create table branch_employees(
+    employee_id int primary key,
+    first_name varchar(50),
+    last_name varchar(50),
+    email varchar(100),
+    hire_date date,
+    department varchar(50),
+    salary decimal(10,2)
+);
+create table customers{
+    customer_id int primary key,
+    first_name varchar(50),
+    last_name varchar(50),
+    email varchar(50),
+    signup_date date,
+    status varchar(20)
+};
+
+insert into headquarters_employees values
+(101,'John','smith','mary.smith@company.com','2018-03-15','IT',7500.00),
+(101,'John','smith','mary.smith@company.com','2018-03-15','IT',7500.00),
+(101,'John','smith','mary.smith@company.com','2018-03-15','IT',7500.00),
+(101,'John','smith','mary.smith@company.com','2018-03-15','IT',7500.00),
+(101,'John','smith','mary.smith@company.com','2018-03-15','IT',7500.00),
+(101,'John','smith','mary.smith@company.com','2018-03-15','IT',7500.00);
+
+insert into branch_employees values
+(201,'James','wilson','james.wilson@company','2019-04-18',62000.00),
+(201,'James','wilson','james.wilson@company','2019-04-18',62000.00),
+(201,'James','wilson','james.wilson@company','2019-04-18',62000.00),
+(201,'James','wilson','james.wilson@company','2019-04-18',62000.00),
+(201,'James','wilson','james.wilson@company','2019-04-18',62000.00);
+
+insert into customers values
+(1001,'David','Miller','david.miller@gmail.com','2019-02-14','Active'),
+(1001,'David','Miller','david.miller@gmail.com','2019-02-14','Active'),
+(1001,'David','Miller','david.miller@gmail.com','2019-02-14','Active'),
+(1001,'David','Miller','david.miller@gmail.com','2019-02-14','Active'),
+(1001,'David','Miller','david.miller@gmail.com','2019-02-14','Active'),
+(1001,'David','Miller','david.miller@gmail.com','2019-02-14','Active');
+
+select * from headquarters_employees;
+select * from branch_employees;
+select * from customers;
+
+-- union all 
+select first_name, last_name, email from headquarters_employees
+union all
+select first_name, last_name, email from branch_employees;
+-- note: can contains same name row with one diff value 
+
+select * from customers;
+
+
+-- combines row from multiple queries into a single result set 
+-- appends rows vertically (stacks them on top of each other)
+-- requires that all queries have the same number of columns(compatible with each other like if in first talbe there is number date varchar then for union to other table2 it also have same nubmer date varchar only)
+-- column data types must be compatible across all queries
+-- eliminates duplicates rows by default (use union all to keep duplicates)
+
+-- uses the column names from the first select statement for the final result set
+-- ignores column names from subsequent queries
+
+-- combine employee and customer contact information
+select first_name, last_name, email, 'Employee' as contact_type
+from headquarters_employees
+UNION 
+select first_name, email, 'Customer' AS contact_type
+from customers;
+
+
+-- Get all employees sorted by last name 
+select employee_id, first_name, last_name, department
+from headquarters_employees
+union 
+select emloyee_id, first_name, last_name, department
+from branch_employees
+order by last_name;
+
+-- filter before union  and sort by salary
+select employee_id, first_name, last_name, department, salary
+from headquarters_employees
+where salary > 7000
+union 
+select employee_id,first_name, last_name, department, salary
+from branch_employees
+where salary > 7000
+
+order by salary desc;
+
+-- if we want column that is not common in second but you want defalut value in it 
+select employee_id, first_name, last_name, department, salary, Null as status 
+from headquarters_employees
+union 
+select customer_id, first_name, last_name, NULL, NULL, status 
+from customers
+order by first_name, last_name;
+
+--find all department in headquarters and branch offices 
+select department from headquarters_employees
+union
+select department from branch
+
+--find all common department in headquarters and branch offices
+select department from (select distinct department from headquarters
+union all
+select distinct depart from branch) as combined
+group by department having count(*)=2;
+
+
+------------------------+------------------------------+-------------------------------------------------+------------------------------+-------------------------
+------------------------+------------------------------+-------------------------------------------------+------------------------------+-------------------------
+
+
+### FULL JOIN 
+-- it return all matching rows from both tables where the join condition is met 
+-- it also retual all non-matching rows from the left talbe (with null values for columns from the right table)
+-- it also retual all non-matching rows from the right talbe (with null values for columns from the left table)
+
+-- it combines the results of both left join and right join, including all records from both tables and matching records from both sides where available
+
+-- example an "employee" table 
+-- A "department" table 
+-- all emplyee with their departments
+-- all employees without departments(with null for department columns)
+-- all departments without employees(with null for employee columns)
+
+-- inner join (only return mathching row between talbes)
+-- left join(returns all rows from left table and matching from right)
+-- right join(returns all rows from right talbe and matching from left)
+
+
+-- create database 
+create database fulljoindemo;
+use fulljoindemo;
+
+create table characters(
+    character_id int primary key,
+    first_name varchar(50) not null,
+    last_name varchar(50) nto null,
+    occupation varchar(100)
+);
+
+create talbe apartments(
+    apartment_id int primary key,
+    building_address varchar(100) not null,
+    apartment_nubmer varchar(10) not null,
+    monthly_rent decimal(8,2),
+    current_tenant_id int 
+);
+
+insert into characters (character_id, first_name,last_name, occupation) values
+(1,'Ross','Geller','Palentologist),
+(1,'Ross','Geller','Palentologist),
+(1,'Ross','Geller','Palentologist),
+(1,'Ross','Geller','Palentologist),
+(1,'Ross','Geller','Palentologist),
+(1,'Ross','Geller','Palentologist),
+(1,'Ross','Geller','Palentologist),
+(8,'Ross','Geller','Palentologist);
+
+insert into apartments (apartment_id,building_address, apartment_nubmer,monthly_rent,current_tenant_id) values 
+(101,'90 Bedford Street','20',3500.00,3),
+(101,'90 Bedford Street','20',3500.00,3),
+(101,'90 Bedford Street','20',3500.00,3),
+(101,'90 Bedford Street','20',3500.00,3),
+(101,'90 Bedford Street','20',3500.00,3),
+(101,'90 Bedford Street','20',3500.00,3),
+(106,'90 Bedford Street','20',3500.00,3);
+
+
+
+--all characters, including those without apartments
+--all apartments, including those wihout tenants
+--mathces where characters have apartments
+
+-- note: mysql achive full join using union(postgress support full join natively)
+
+select c.character_id,c.first_name,a.apartment_id, a.apartment_nubmer 
+from characters c 
+left join apartments a on c.character_id = a.current_tenant_id 
+
+union 
+
+select c.character_id,c.first_name,a.apartment_id,a.apartment_nubmer
+from characters c 
+right join apartments a on c.character_id = a.apartment_id;
+
+
+------------------------+------------------------------+-------------------------------------------------+------------------------------+-------------------------
+------------------------+------------------------------+-------------------------------------------------+------------------------------+-------------------------
+
+
+### CROSS JOIN 
+-- cartesian product of two tables 
+-- it combines each row from the first talbe with every row from second talbe
+-- resulting in all possible combinations of rows   
+
+create database cross_join_tutorials;
+use cross_join_tutorials;
+
+create table products(
+    product_id int primary key,
+    product_name varchar(50) not null
+);
+
+create talbe colors(
+    color_id int primary key,
+    color_name varchar(30) not null 
+);
+
+insert into products (product_id,product_name) values 
+(1,'T-shirt'),
+(2,'Jeans'),
+(3,'Sweater'),
+(4,'Jacket');
+
+insert into color (color_id,color_name) values
+(1,'Red'),
+(2,'Blue'),
+(3,'Green'),
+(4,'Black'),
+(5,'White');
+
+select p.product_name,c.color_name from products p cross join colors c;
+select count(*) from products cross join colors;
+explain select count(*) from products cross join colors;
+
+
+------------------------+------------------------------+-------------------------------------------------+------------------------------+-------------------------
+------------------------+------------------------------+-------------------------------------------------+------------------------------+-------------------------
+
+
+### SELF JOIN 
+create database self_join_tutorial;
+use self_join_tutorial;
+
+create table employees(
+    employee_id int primary key,
+    first_name varchar(50),
+    last_name varchar(50),
+    job_title varchar(100),
+    salary decimal(10,2),
+    department varchar(50),
+    manager_id int,
+    hire_date date
+);
+
+insert into employees (employee_id,first_name,last_name,job_title,salary,department,manager_id,hire_date) values 
+(1,'James','Smith','CEO',150000.00,'Executive',NULL,'2010-01-15'),
+(2,'sarah','johnsone','cto',140000.00,'techology',1,'2010-01-15'),
+(3,'micheal','williams','cfo',140000.00,'Finance',1,'2010-01-15'),
+(4,'jassica','brown','hr director',110000.00,'human resources',1,'2010-01-15'),
+(5,'david','miller','senior developer',95000.00,'technology',2,'2010-01-15'),
+(6,'emilly','davis','developer',80000.00,'technology',5,'2010-01-15'),
+(7,'robert','wilson','junior developer',65000.00,'technology',5,'2010-01-15'),
+(8,'jannifer','taylor','accountant',75000.00,'Finance',3,'2010-01-15'),
+(9,'thomas','anderson','accountant',72000.00,'Finance',3,'2010-01-15'),
+(10,'lisa','martinez','hr specialist',68000.00,'human resources',4,'2010-01-15');
+
+-- get manager for each employees 
+select emp.first_name, mgr.first_name from employees emp join employees mgr on emp.employee_id = mgr.manager_id;
+
+-- get manager for each employees with null manager also 
+select emp.first_name, mgr.first_name from employees emp left join employees mgr on emp.employee_id = mgr.manager_id;
+
+--find employees who work in the same department using group by 
+select group_concat(e.first_name), e. department
+from emloyees 
+group by d.department;
+
+--find employees who work in the same department using self join
+select * from emloyees e1 join employees e2 on e1.department = e2.department and e1.employee_id < e2.employee_id;
+
+--find emplyees who earn more than their maangers 
+select * from employees e
+join employee m 
+on e.employee_id = m.manager_id
+where e.salary > m.salary;
+
+--calculates average salary difference between employees and mamagers by department **
+select 
+    e.department avg(m.salary - e.salary) as avg_salary_diff 
+from employees e 
+join emloyees m 
+on e.employee_id = m.manager_id
+group by e.department;
+
+-- note: not self join average salary of managers vs average salary of employees, grouped by department
+SELECT 
+    e.department,
+    AVG(CASE WHEN e.manager_id IS NULL THEN salary END) AS avg_manager_salary,
+    AVG(CASE WHEN e.manager_id IS NOT NULL THEN salary END) AS avg_employee_salary
+FROM employees e
+GROUP BY e.department;
+
+
+--imp 
+--always use different aliases for each instance of the table 
+--when looking for pairs, use conditions like a.id < b.id to avoid matching rows with themselves.
+--self joins can be resource-intensive. consider indexing columns used in join condition.
+--consider left joins wen you need to include rocords without matches
