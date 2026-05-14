@@ -1,0 +1,116 @@
+
+using System.ComponentModel.Design;
+using Type;
+
+Category?[] categories =
+[
+    new("mobile",1),
+    null,
+    new("laptop",2),
+    null,
+    new("tv",3)
+];
+
+Product?[] products = [
+    new Product("samsumng",1),
+    new Product("mi",2),
+    new Product("vivo",3),
+    null,
+    new Product("nokia",4),
+    new Product("apple",5),
+    null,
+    new Product("bajaj",6),
+    new Product("blackbarry",7),
+    new Product("xiome",8),
+];
+
+var query1 = from c in categories
+             where c != null
+             join p in products on c.ID equals p?.CategoryID
+             select new
+             {
+                 Category = c.Name,
+                 Name = p.Name
+             };
+
+// foreach( var i in query1)
+// {
+//     Console.WriteLine(i);
+// }
+
+
+//Tutorial: Write queries in C# using language integrated query (LINQ)
+
+
+// Create a data source by using a collection initializer.
+IEnumerable<Student> students =
+[
+    new Student(First: "Svetlana", Last: "Omelchenko", ID: 111, Scores: [97, 92, 81, 60]),
+    new Student(First: "Claire",   Last: "O'Donnell",  ID: 112, Scores: [75, 84, 91, 39]),
+    new Student(First: "Sven",     Last: "Mortensen",  ID: 113, Scores: [88, 94, 65, 91]),
+    new Student(First: "Cesar",    Last: "Garcia",     ID: 114, Scores: [97, 89, 85, 82]),
+    new Student(First: "Debra",    Last: "Garcia",     ID: 115, Scores: [35, 72, 91, 70]),
+    new Student(First: "Fadi",     Last: "Fakhouri",   ID: 116, Scores: [99, 86, 90, 94]),
+    new Student(First: "Hanying",  Last: "Feng",       ID: 117, Scores: [93, 92, 80, 87]),
+    new Student(First: "Hugo",     Last: "Garcia",     ID: 118, Scores: [92, 90, 83, 78]),
+
+    new Student("Lance",   "Tucker",      119, [68, 79, 88, 92]),
+    new Student("Terry",   "Adams",       120, [99, 82, 81, 79]),
+    new Student("Eugene",  "Zabokritski", 121, [96, 85, 91, 60]),
+    new Student("Michael", "Tucker",      122, [94, 92, 91, 91])
+];
+
+
+// IEnumerable<Student> studentQuery =
+//     from student in students
+//     where student.Scores[0] > 90
+//     orderby student.Scores[0] 
+//     select student;
+
+// foreach(var s in studentQuery)
+// {
+//     Console.WriteLine($"{s.Last}   ==> {s.Scores[0]}");
+// }
+
+
+
+
+//To transform or project in the select clause
+
+// IEnumerable<string> strudentQuery =
+//     from student in students
+//     where student.Last == "Garcia"
+//     select student.First;
+// foreach(var std in strudentQuery)
+// {
+//     Console.WriteLine($"{std}");
+// }
+
+var studentQuery =
+    from student in students
+    let totalScore = student.Scores[0] + student.Scores[1] +
+            student.Scores[2] + student.Scores[2]
+    select totalScore;
+
+Console.WriteLine("totalScore : " + studentQuery.ToList());
+
+var average = studentQuery.Average();
+
+Console.WriteLine("average : " + average);
+
+
+var aboveAverageQuery =
+    from student in students
+    let x = student.Scores[0] + student.Scores[1] + student.Scores[2] + student.Scores[3]
+    where x > average
+    select student;
+
+foreach(var s in aboveAverageQuery)
+{
+    Console.WriteLine($"{s.First} {s.Last}");
+    foreach (var score in s.Scores)
+    {
+        Console.Write(score + " ");
+    }
+    Console.WriteLine();
+}

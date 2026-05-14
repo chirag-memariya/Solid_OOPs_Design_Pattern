@@ -1,0 +1,167 @@
+﻿using System.Reflection.PortableExecutable;
+using System.Runtime.ExceptionServices;
+
+Console.WriteLine("OOP with derived or abstract classes overrides");
+
+
+#region Init
+// 1
+var rocky = new Dog("Rocky");
+var snow = new Cat("Snow1");
+var snow1 = new Cat("Snow2");
+var p1 = new Person("Aarav", "Patel", new DateOnly(1998, 5, 12));
+var p2 = new Person("Meera", "Shah", new DateOnly(2000, 11, 23));
+p1.Pets.Add(rocky);
+p2.Pets.Add(snow1);
+p2.Pets.Add(snow);
+
+// 2
+var max = new Dog("Max");
+var luna = new Cat("Luna");
+var p3 = new Person("Rohit", "Desai", new DateOnly(1995, 3, 5));
+var p4 = new Person("Kavya", "Desai", new DateOnly(1997, 8, 9));
+p3.Pets.Add(max);
+p4.Pets.Add(luna);
+
+// 3
+var tiger = new Dog("Tiger");
+var bella = new Cat("Bella");
+var p5 = new Person("Jay", "Trivedi", new DateOnly(1992, 10, 10));
+var p6 = new Person("Priya", "Trivedi", new DateOnly(1994, 6, 14));
+p5.Pets.Add(tiger);
+p6.Pets.Add(bella);
+
+// 4
+var simba = new Dog("Simba");
+var misty = new Cat("Misty");
+var p7 = new Person("Dhruv", "Joshi", new DateOnly(2002, 7, 25));
+var p8 = new Person("Nidhi", "Joshi", new DateOnly(2001, 2, 18));
+p7.Pets.Add(simba);
+p8.Pets.Add(misty);
+
+// 5
+var bruno = new Dog("Bruno");
+var coco = new Cat("Coco");
+var p9 = new Person("Amit", "Patil", new DateOnly(1989, 12, 3));
+var p10 = new Person("Sneha", "Patil", new DateOnly(1991, 9, 27));
+p9.Pets.Add(bruno);
+p10.Pets.Add(coco);
+
+// 6
+var buddy = new Dog("Buddy");
+var mia = new Cat("Mia");
+var p11 = new Person("Harsh", "Rao", new DateOnly(2000, 4, 5));
+var p12 = new Person("Pooja", "Rao", new DateOnly(1999, 8, 22));
+p11.Pets.Add(buddy);
+p12.Pets.Add(mia);
+
+// 7
+var rex = new Dog("Rex");
+var lily = new Cat("Lily");
+var p13 = new Person("Neel", "Kapoor", new DateOnly(1993, 11, 16));
+var p14 = new Person("Tina", "Kapoor", new DateOnly(1996, 1, 20));
+p13.Pets.Add(rex);
+p14.Pets.Add(lily);
+
+// 8
+var duke = new Dog("Duke");
+var nala = new Cat("Nala");
+var p15 = new Person("Manav", "Bose", new DateOnly(1990, 5, 30));
+var p16 = new Person("Aarti", "Bose", new DateOnly(1992, 7, 15));
+p15.Pets.Add(duke);
+p16.Pets.Add(nala);
+
+// 9
+var leo = new Dog("Leo");
+var chloe = new Cat("Chloe");
+var p17 = new Person("Rakesh", "Verma", new DateOnly(1985, 2, 2));
+var p18 = new Person("Kiran", "Verma", new DateOnly(1988, 10, 8));
+p17.Pets.Add(leo);
+p18.Pets.Add(chloe);
+
+// 10
+var shadow = new Dog("Shadow");
+var ruby = new Cat("Ruby");
+var p19 = new Person("Yash", "Singh", new DateOnly(2001, 9, 12));
+var p20 = new Person("Ananya", "Singh", new DateOnly(2002, 3, 19));
+p19.Pets.Add(shadow);
+p20.Pets.Add(ruby);
+
+#endregion
+
+
+List<Person> people = [p1, p2,p3,p4,p5,p6,p7,p8,p9,p10, p11, p12,p13,p14,p15,p16,p17,p18,p19,p20];
+// PrintCollection(people);
+
+
+IEnumerable<Person> result =
+                    from p in people
+                    where p.Pets.Any(pet => pet is Dog)
+                    select p;
+
+var result2 = people.Where(p => p.Pets.Any(pet => pet is Cat))
+                    .OrderBy(p => p.Pets
+                        .Where(pet=> pet is Cat)
+                        .Select(pet => pet.First)
+                        .Min()
+                    );
+
+PrintCollection(result2);
+
+
+static void PrintCollection(IEnumerable<Person> people)
+{
+    Console.WriteLine($"Start.............................");
+    foreach (var person in people)
+    {
+        Console.WriteLine(person);
+        foreach (var pet in person.Pets)
+        {
+            Console.WriteLine($"   {pet}");
+        }
+    }
+    Console.WriteLine($"End ..............................");
+
+}
+public class Person
+{
+
+    public Person(string firstname, string lastname, DateOnly birthdate)
+    {
+        FirstName = firstname;
+        LastName = lastname;
+        Birthdate = birthdate;
+    }
+
+    private string FirstName { get; }
+    private string LastName { get; }
+    private DateOnly Birthdate { get; }
+
+    public List<Pet> Pets = new();
+
+    public override string ToString()
+    {
+        return $"Human {FirstName} {LastName} have a ";
+    }
+
+}
+
+public abstract class Pet(string first)
+{
+    public string First { get; } = first;
+    public abstract string MakeNoice();
+    public override string ToString()
+    {
+        return $"{GetType().Name} : {First} And It {MakeNoice()}.";
+    }
+}
+
+public class Cat(string firstname) : Pet(firstname)
+{
+    public override string MakeNoice() => "meow";
+}
+
+public class Dog(string firstname) : Pet(firstname)
+{
+    public override string MakeNoice() => "bark";
+}

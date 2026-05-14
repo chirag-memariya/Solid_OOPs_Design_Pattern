@@ -1,0 +1,6 @@
+# Service Account for admin-user in kubernetes-dashboard namespace
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard

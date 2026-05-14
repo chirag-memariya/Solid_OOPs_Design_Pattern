@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fd
+  template:
+    metadata:
+      labels:
+        app: fd
+    spec:
+      # Commented out the volumes section to remove PV and PVC
+      # volumes:
+      #   - name: local-storage
+      #     persistentVolumeClaim:
+      #       claimName: preet-pvc
+      containers:
+      - name: fd
+        image: phadkesharanmatrixcomsec/swarm-fd-service
+        ports:
+        - containerPort: 80
+        # Removed volumeMounts related to the deleted volume
+        resources:
+          limits:
+            cpu: "0.8"
+            memory: 1000Mi
+          requests:
+            cpu: "0.8"
+            memory: 1000Mi
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fd-service-service
+spec:
+  selector:
+    app: fd
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 32001

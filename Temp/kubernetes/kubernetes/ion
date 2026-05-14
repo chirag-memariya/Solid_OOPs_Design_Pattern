@@ -1,0 +1,6 @@
+● kube-apiserver.service - Kubernetes API Server
+   Loaded: loaded (/etc/systemd/system/kube-apiserver.service; enabled; vendor preset: enabled)
+   Active: activating (auto-restart) (Result: exit-code) since Thu 2023-12-21 15:39:45 IST; 1s ago
+     Docs: https://github.com/GoogleCloudPlatform/kubernetes
+  Process: 577 ExecStart=/usr/local/bin/hyperkube apiserver --insecure-bind-address=0.0.0.0 --etcd-servers=http://127.0.0.1:2379 --service-cluster-ip-range=10.32.0.0/24 --allow-privileged=true [0;1;31m(code=exited, status=203/EXEC)[0m
+ Main PID: 577 (code=exited, status=203/EXEC)

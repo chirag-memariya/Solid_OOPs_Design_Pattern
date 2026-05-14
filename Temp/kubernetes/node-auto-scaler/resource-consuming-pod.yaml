@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resource-consuming-pod
+spec:
+  containers:
+  - name: busybox
+    image: busybox
+    command: ["sh", "-c", "while true; do echo 'Running...'; done"]
+    resources:
+      requests:
+        cpu: "1"

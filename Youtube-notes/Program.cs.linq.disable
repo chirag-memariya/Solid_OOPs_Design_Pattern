@@ -1,0 +1,152 @@
+using Type;
+//Standard Query Operators Overview
+
+string sentence = "the quick brown fox jumps over the lazy dog";
+string[] words = sentence.Split(' ');
+
+// foreach (string word in words)
+// {
+//     Console.WriteLine(word);
+// }
+
+var query = from word in words
+            group word.ToUpper() by word.Length into gr
+            orderby gr.Key
+            select new
+            {
+                Length = gr.Key,
+                Words = gr
+            };
+
+// foreach (var word in query)
+// {
+
+//     Console.WriteLine(word.Length);
+//     foreach (var w in word.Words)
+//     {
+//         Console.Write($"{w} ");
+//     }
+//     Console.WriteLine();
+// }
+
+// var query2 = words.GroupBy(w => w.Length, w => w.ToUpper())
+//                 .Select(g => new { Length = g.Key, Words = g })
+//                 .OrderBy(o => o.Length);
+
+
+// foreach (var word in query2)
+// {
+
+//     Console.WriteLine(word.Length);
+//     foreach (var w in word.Words)
+//     {
+//         Console.Write($"{w} ");
+//     }
+//     Console.WriteLine();
+// }
+
+
+Student[] students =
+{
+    new Student("Chirag","Memriya",1,GradeLevel.FirstYear,new List<int>{90,80,85},101),
+    new Student("Chirag4","Memriya4",5,GradeLevel.FirstYear,new List<int>{94,85,89},102),
+    new Student("Chirag6","Memriya6",7,GradeLevel.FirstYear,new List<int>{96,87,81},103),
+    new Student("Chirag61","Memriya61",71,GradeLevel.FirstYear,new List<int>{96,87,81},103),
+    new Student("Chirag3","Memriya3",4,GradeLevel.FirstYear,new List<int>{93,84,88},104),
+    new Student("Chirag5","Memriya5",6,GradeLevel.FirstYear,new List<int>{95,86,80},105),
+    new Student("Chirag51","Memriya51",61,GradeLevel.FirstYear,new List<int>{95,86,80},105),
+    new Student("Chirag1","Memriya1",2,GradeLevel.FirstYear,new List<int>{91,82,85},106),
+    new Student("Chirag2","Memriya2",3,GradeLevel.FirstYear,new List<int>{92,83,87},106),
+
+};
+
+Teacher[] teachers =
+{
+    new Teacher("Teacher1","Last1",1,"City1"),
+    new Teacher("Teacher2","Last2",2,"City2"),
+    new Teacher("Teacher3","Last3",3,"City3"),
+    new Teacher("Teacher4","Last4",4,"City4"),
+    new Teacher("Teacher5","Last5",5,"City5"),
+    new Teacher("Teacher6","Last6",6,"City6"),
+};
+
+Department[] departments =
+{
+    new Department("CSE1",101,1),
+    new Department("CSE2",102,2),
+    new Department("CSE3",102,3),
+    new Department("CSE4",103,4),
+    new Department("CSE5",104,5),
+    new Department("CSE6",105,6),
+    new Department("CSE7",106,7),
+};
+
+// var queryAllStudents = from student in students
+//                        where student.ID is > 1 and < 5
+//                        orderby student
+//                        select new
+//                        {
+//                             student.FirstName,
+//                             student.ID
+//                        };
+
+// foreach(var name in queryAllStudents)
+// {
+//     Console.WriteLine($"{name.FirstName} ........ ID: {name.ID}");
+// }
+
+
+// var queryAllStudents = from student in students
+//                        group student by student.DepartmentID ;                    
+// foreach(IGrouping<int,Student> studentGroup in queryAllStudents)
+// {
+//     Console.WriteLine(studentGroup.Key);
+//     foreach(Student student in studentGroup)
+//     {
+//         Console.WriteLine($"   {student.ID} {student.LastName},  {student.FirstName}");
+//     }
+// }
+
+
+
+// var orderQuery = from department in departments
+//                  join student in students on department.ID equals student.DepartmentID into studentGroup
+//                  orderby department.Name
+//                  select new
+//                  {
+//                      DepartmentName = department.Name,
+//                      Students = from student in studentGroup
+//                                 orderby student.ID
+//                                 select student
+//                  };
+
+// foreach(var departmentList in orderQuery)
+// {
+//     Console.WriteLine(departmentList.DepartmentName);
+//     foreach(var student in departmentList.Students)
+//     {
+//         Console.WriteLine($"{student.LastName.PadLeft(10,'*')} {student.FirstName.PadRight(10,'*')}");
+//     }
+// }
+
+
+
+
+
+// var orderedQuery = departments
+//     .GroupJoin(students, department => department.ID, student => student.DepartmentID,
+//                 (department, studentGroup) => new
+//                 {
+//                     DepartmentName = department.Name,
+//                     Students = studentGroup.OrderBy(student => student.LastName)
+//                 })
+//     .OrderBy(department => department.DepartmentName);
+
+// foreach (var departmentList in orderedQuery)
+// {
+//     Console.WriteLine(departmentList.DepartmentName);
+//     foreach (var student in departmentList.Students)
+//     {
+//         Console.WriteLine($"  {student.LastName,-10} {student.FirstName,-10}");
+//     }
+// }

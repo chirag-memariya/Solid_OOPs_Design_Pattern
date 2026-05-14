@@ -1,0 +1,38 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-autoscaler
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["watch", "list", "get", "update"]
+- apiGroups: [""]
+  resources: ["pods/eviction"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["pods/status"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["endpoints"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create"]
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["leases"]
+  verbs: ["get", "create", "update"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-autoscaler
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: cluster-autoscaler
+  apiGroup: rbac.authorization.k8s.io

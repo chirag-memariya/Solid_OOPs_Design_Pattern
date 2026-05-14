@@ -1,0 +1,19 @@
+{
+    "kind": "KubeletConfiguration",
+    "apiVersion": "kubelet.config.k8s.io/v1beta1",
+    "staticPodPath": "/etc/kubernetes/manifests",
+    "authentication": {
+        "x509": {
+            "keyFile": "/kubelet.key",
+            "certFile": "/kubelet.crt"
+        },
+        "webhook": {
+            "enabled": false
+        }
+    },
+    "authorization": {
+        "mode": "AlwaysAllow"
+    },
+    "serverTLSBootstrap": true
+}
+

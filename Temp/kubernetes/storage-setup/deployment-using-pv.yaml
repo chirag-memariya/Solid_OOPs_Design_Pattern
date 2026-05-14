@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fd-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fd
+  template:
+    metadata:
+      labels:
+        app: fd
+    spec:
+      volumes:
+        - name: local-storage
+          persistentVolumeClaim:
+            claimName: preet-pvc
+      containers:
+      - name: fd
+        image: phadkesharanmatrixcomsec/swarm-fd-service
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - mountPath: "app/Data"  # Adjust this path based on your application's requirements
+            name: local-storage
+        resources:
+          limits:
+            cpu: "0.8" # Set CPU limit to 0.5 (50% of a single core)
+            memory: 1000Mi # Set memory limit to 256 megabytes
+          requests:
+            cpu: "0.8" # Set CPU reservation to 0.2 (20% of a single core)
+            memory: 1000Mi # Set memory reservation to 128 megabytes
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fd-service-service
+spec:
+  selector:
+    app: fd
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 32001
